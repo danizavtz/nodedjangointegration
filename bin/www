@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+const app = require('../app');
+
+try {
+    const port = process.env.PORT || 3001
+    app.listen(port);
+    console.log('Microsservice restart status listening at http://localhost:%s', port);
+} catch (e) {
+    throw e;
+}

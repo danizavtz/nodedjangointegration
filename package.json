@@ -1,0 +1,30 @@
+{
+  "name": "nodedjangointegration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --env-file=.env bin/www",
+    "dev": "node --env-file=.env --watch bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/danizavtz/nodedjangointegration.git"
+  },
+  "keywords": [
+    "node",
+    "django",
+    "integration"
+  ],
+  "author": "danizavtz",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/danizavtz/nodedjangointegration/issues"
+  },
+  "homepage": "https://github.com/danizavtz/nodedjangointegration#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0"
+  }
+}
