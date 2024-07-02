@@ -11,7 +11,7 @@ exports.status = (req, res) => {
             return;
         }
         const outputarr = stdout.split(',');
-        if (outputarr.length > 0 && outputarr[0].includes('RUNNING') && outputarr[0].includes('backendqos')) {
+        if (outputarr.length > 0 && outputarr[0].includes('RUNNING') && outputarr[0].includes(process.env.APP_NAME)) {
             const saida = outputarr[1].split(' ');
             if (saida.length === 3) {
                 res.status(200).json({ "dias": "0", "duracao": saida[saida.length - 1] });
