@@ -18,5 +18,5 @@ exports.verifyCredentialsInDjango = (req, res, next) => {
 
 
 exports.validado = (req, res) => {
-    res.status(200).json({msg: 'Validado'});
+    res.status(200).json({msg: 'Validado', token: 'ok' });
 };
