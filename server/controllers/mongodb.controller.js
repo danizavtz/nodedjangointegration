@@ -39,7 +39,8 @@ exports.restartDocker = (req, res) => {
                 res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina de reiniciar container', param: null }] });
                 return;
             }
-            res.status(200).json({ msg: "OK", detalhe: stdout });
+            const formatedOutput = stdout.replace('\n', '');
+            res.status(200).json({ status: "online", msg: "OK", detalhe: formatedOutput });
         });
     });
 };
