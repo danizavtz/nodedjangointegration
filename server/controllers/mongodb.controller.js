@@ -19,7 +19,7 @@ const extrairContainerData = (stdoutput_string, imageId) => {
         }
     }
     return null;
-}
+};
 
 const extrairImageId = (stdoutput_string) => {
     const linha = stdoutput_string.split('\n');
@@ -34,19 +34,62 @@ const extrairImageId = (stdoutput_string) => {
     return null;
 };
 
-exports.status = (req, res) => {
-    exec('docker ps --format "{{.ID}}:{{.Image}}:{{.Status}}:{{.State}}"', (err, stdout, stderr) => {
+const extractDuracao = (stdoutput_string) => {
+    const now = new Date();
+    const ano = parseInt(stdoutput_string.substring(0, 4));
+    const mes = parseInt(stdoutput_string.substring(5, 7));
+    const dia = parseInt(stdoutput_string.substring(8, 10));
+    const hora = parseInt(stdoutput_string.substring(11, 13));
+    const minuto = parseInt(stdoutput_string.substring(14, 16));
+    const segundo = parseInt(stdoutput_string.substring(17, 19));
+    const tzoffset = now.getTimezoneOffset();
+    const tzoffsetHours = (tzoffset / 60);
+    const startDate = new Date(ano, mes - 1, dia, hora - tzoffsetHours, minuto, segundo);
+    const output = (now.getTime() - startDate.getTime());
+    const duracaosegundos = output / 1000;
+    const duracaominutos = output / 60_000;
+    const duracaohoras = output / 3_600_000;
+    const duracaodias = output / 86_400_000;
+    return { dias: parseInt(duracaodias), horas: parseInt(duracaohoras % 24), minutos: parseInt(duracaominutos % 60), segundos: parseInt(duracaosegundos % 60) };
+};
+
+exports.filterRunningContainerByImageId = (req, res, next) => {
+    const containerData = extrairContainerData(req.allRunningContainers, req.dockerImageId);
+    if (containerData === null || containerData < 3) {
+        res.status(500).json({ errors: [{ msg: 'Não foi possível localizar uma instância docker em execução, consulte o suporte', param: null }] });
+        return;
+    }
+    req.cdata = containerData;
+    next();
+};
+
+exports.getStartedAtFromContainer = (req, res, next) => {
+    exec(`docker inspect -f "{{ .State.StartedAt }}" ${req.cdata[0]}`, (err, stdout, stderr) => {
         if (err) {
             console.log(err);
             res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina', param: null }] });
             return;
         }
-        const containerData = extrairContainerData(stdout, req.dockerImageId);
-        if (containerData === null || containerData < 3) {
-            res.status(500).json({ errors: [{ msg: 'Não foi possível localizar uma instância docker em execução, consulte o suporte', param: null }] });
+        req.duracao = stdout.replace('\n', '');
+        next();
+    });
+};
+
+
+exports.status = (req, res) => {
+    const tempo = extractDuracao(req.duracao);
+    res.status(200).json({ status: req.cdata[3], msg: "OK", dias: tempo.dias, duracao: `${tempo.horas < 10 ? '0' + tempo.horas : tempo.horas}:${tempo.minutos < 10 ? '0' + tempo.minutos : tempo.minutos}:${tempo.segundos < 10 ? '0' + tempo.segundos : tempo.segundos}`, detalhe: req.cdata[2] });
+};
+
+exports.showDuration = (req, res, next) => {
+    exec(`docker inspect -f "{{ .State.StartedAt }}" ${containerData[0]}`, (err, stdout, stderr) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina', param: null }] });
             return;
         }
-        res.status(200).json({ status: containerData[3], msg: "OK", detalhe: containerData[2] });
+        req.duracao = stdout.replace('\n', '');
+        next();
     });
 };
 
@@ -58,6 +101,18 @@ exports.listDockerImages = (req, res, next) => {
         }
         req.dockerImageId = extrairImageId(stdout);
         next();
+    });
+};
+
+exports.listAllRunningContainers = (req, res, next)  => {
+    exec('docker ps --format "{{.ID}}:{{.Image}}:{{.Status}}:{{.State}}"', (err, stdout, stderr) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina', param: null }] });
+            return;
+        }
+        req.allRunningContainers = stdout;
+        next()
     });
 };
 
