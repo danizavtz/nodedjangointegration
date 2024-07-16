@@ -7,9 +7,12 @@ exports.validationQueryRules = [
     body('password', 'password is required').isAlphanumeric().notEmpty(),
 ];
 
-exports.validationHeaderRules = [
+exports.validationHeaderAuthorization = [
     header('authorization', 'authorization is required').exists(),
-    header('authorization', 'authorization is required and should be Basic authentication').notEmpty().contains('Basic'),
+    header('authorization', 'authorization is required and should be Basic authentication').notEmpty().contains('Basic'),  
+];
+
+exports.validationHeaderAuthorizationContentChecker = [
     header('authorization').custom((value, { req }) => {
         const existingWhiteSpaceIndex = value.indexOf(' ');
         if (existingWhiteSpaceIndex === -1) {
