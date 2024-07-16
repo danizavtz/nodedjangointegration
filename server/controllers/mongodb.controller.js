@@ -135,7 +135,7 @@ exports.listDockerRunningContainer = (req, res, next) => {
 exports.restartDocker = (req, res) => {
     exec(`docker restart ${req.containerId}`, (err, stdout, stderr) => {
         if (err) {
-            res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina de reiniciar container', param: null }] });
+            res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina de reiniciar container, tente novamente, se o problema persistir consulte o suporte', param: null }] });
             return;
         }
         const formatedOutput = stdout.replace('\n', '');
