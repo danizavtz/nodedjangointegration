@@ -5,8 +5,8 @@ const availableApps = (_=> {try { return JSON.parse(process.env.AVAILABLE_APPS);
 availableApps.push(process.env.APP_NAME);
 
 exports.validationQueryRules = [    
-    query('appname', 'appname is required').exists(),
-    query('appname', 'appname is required and must be one of "backend, node-jobs, service-status"').isIn(availableApps),
+    query('appname', 'appname is required').optional(),
+    query('appname', 'appname is required and must be one of "backend, node-jobs, service-status"').optional().isIn(availableApps),
 ];
 
 

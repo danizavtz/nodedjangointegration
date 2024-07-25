@@ -1,10 +1,8 @@
 const { exec } = require('child_process');
 
-const availableApps = (_=> {try { return JSON.parse(process.env.AVAILABLE_APPS); } catch(err) { return []; }})();
-availableApps.push(process.env.APP_NAME);
-
 exports.status = (req, res) => {
-    exec(`supervisorctl status ${availableApps[availableApps.length - 1]}`, (err, stdout, stderr) => {
+    const appnamestr = req.query && req.query.appname ? req.query.appname : process.env.APP_NAME
+    exec(`supervisorctl status ${appnamestr}`, (err, stdout, stderr) => {
         if (err) {
             console.log(err);
             res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina', param: null }] });
@@ -25,5 +23,17 @@ exports.status = (req, res) => {
         } else {
             res.status(412).json({ errors: [{ msg: 'Não foi possível fazer leitura', param: null }] });
         }
+    });
+};
+
+exports.restartservice = (req, res) => {
+    const appnamestr = req.query && req.query.appname ? req.query.appname : process.env.APP_NAME
+    exec(`supervisorctl restart ${appnamestr}`, (err, stdout, stderr) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ errors: [{ msg: 'Houve um erro ao executar rotina', param: null }] });
+            return;
+        }
+        res.status(200).json({ msg: "OK", detalhe: stdout });
     });
 };
