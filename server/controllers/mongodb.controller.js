@@ -78,7 +78,7 @@ exports.getStartedAtFromContainer = (req, res, next) => {
 
 exports.status = (req, res) => {
     const tempo = extractDuracao(req.duracao);
-    res.status(200).json({ status: req.cdata[3], msg: "OK", dias: tempo.dias, duracao: `${tempo.horas < 10 ? '0' + tempo.horas : tempo.horas}:${tempo.minutos < 10 ? '0' + tempo.minutos : tempo.minutos}:${tempo.segundos < 10 ? '0' + tempo.segundos : tempo.segundos}`, detalhe: req.cdata[2] });
+    res.status(200).json({ status: "online", msg: "OK", dias: tempo.dias, duracao: `${tempo.horas < 10 ? '0' + tempo.horas : tempo.horas}:${tempo.minutos < 10 ? '0' + tempo.minutos : tempo.minutos}:${tempo.segundos < 10 ? '0' + tempo.segundos : tempo.segundos}`, detalhe: req.cdata[2] });
 };
 
 exports.showDuration = (req, res, next) => {
