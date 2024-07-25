@@ -9,7 +9,7 @@ exports.status = (req, res) => {
             return;
         }
         const outputarr = stdout.split(',');
-        if (outputarr.length > 0 && outputarr[0].includes('RUNNING') && outputarr[0].includes(process.env.APP_NAME)) {
+        if (outputarr.length > 0 && outputarr[0].includes('RUNNING') && outputarr[0].includes(appnamestr)) {
             const saida = outputarr[1].split(' ');
             const outputstr = saida[saida.length - 1].replace('\n', '');
 
